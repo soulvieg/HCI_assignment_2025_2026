@@ -1,0 +1,95 @@
+# -------------------------------------------------------------------------
+# Data & Large Files
+# -------------------------------------------------------------------------
+# Ignore all contents in the data directory
+data/*
+
+# Keep the folder structure by allowing .gitkeep (optional)
+!data/.gitkeep
+
+# Ignore common data formats found elsewhere in the project
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.json
+*.parquet
+*.pkl
+*.h5
+*.hdf5
+*.db
+*.sqlite
+
+# -------------------------------------------------------------------------
+# Jupyter Notebooks
+# -------------------------------------------------------------------------
+# Ignore Jupyter checkpoint folders (auto-generated backups)
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+notebook/.ipynb_checkpoints/
+
+# Optional: Ignore HTML or PDF exports if you only want the source .ipynb
+*.html
+*.pdf
+
+# -------------------------------------------------------------------------
+# Python & Compilation
+# -------------------------------------------------------------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# -------------------------------------------------------------------------
+# Environments (Miniconda/Virtualenv)
+# -------------------------------------------------------------------------
+# While you track environment.yml, you generally ignore the actual env folder
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.venv
+.conda/
+
+# -------------------------------------------------------------------------
+# IDE & System Files
+# -------------------------------------------------------------------------
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# VS Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
+
+# -------------------------------------------------------------------------
+# Secrets & Config
+# -------------------------------------------------------------------------
+# Never commit API keys or local credentials
+secrets.json
+config.ini
+.env.local

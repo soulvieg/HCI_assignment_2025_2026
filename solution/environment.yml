@@ -1,0 +1,11 @@
+name: analysis_env
+channels:
+  - defaults
+dependencies:
+  - pandas
+  - numpy
+  - seaborn
+  - python=3.13
+  - matplotlib
+  - jupyter
+prefix: /home/dimoedo/.conda/envs/analysis_env
