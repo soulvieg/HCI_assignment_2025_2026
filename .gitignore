@@ -1,13 +1,14 @@
 # -------------------------------------------------------------------------
 # Data & Large Files
 # -------------------------------------------------------------------------
-# Ignore all contents in the data directory
-data/*
+# UPDATED: Ignore contents in the solution data directory
+solution/data/*
 
-# Keep the folder structure by allowing .gitkeep (optional)
-!data/.gitkeep
+!solution/data/.gitkeep
+!report/.gitkeep
 
 # Ignore common data formats found elsewhere in the project
+# (These work automatically in subfolders)
 *.csv
 *.tsv
 *.xlsx
@@ -26,7 +27,7 @@ data/*
 # Ignore Jupyter checkpoint folders (auto-generated backups)
 .ipynb_checkpoints/
 */.ipynb_checkpoints/
-notebook/.ipynb_checkpoints/
+solution/notebook/.ipynb_checkpoints/
 
 # Optional: Ignore HTML or PDF exports if you only want the source .ipynb
 *.html
