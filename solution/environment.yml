@@ -1,11 +1,11 @@
 name: analysis_env
 channels:
+  - conda-forge
   - defaults
 dependencies:
-  - pandas
-  - numpy
-  - seaborn
   - python=3.13
-  - matplotlib
-  - jupyter
-prefix: /home/dimoedo/.conda/envs/analysis_env
+  - pandas=2.3.3
+  - numpy=2.3.5
+  - seaborn=0.13.2
+  - matplotlib=3.10.6
+  - jupyter=1.1.1
