@@ -85,6 +85,7 @@ ehthumbs.db
 
 # VS Code
 .vscode/
+*/tempCodeRunnerFile.ipynb
 
 # PyCharm / IntelliJ
 .idea/
