@@ -9,4 +9,5 @@ dependencies:
   - numpy=2.3.5
   - seaborn=0.13.2
   - matplotlib=3.10.6
+  - folium
   - jupyter=1.1.1
