@@ -11,3 +11,4 @@ dependencies:
   - matplotlib=3.10.6
   - folium
   - jupyter=1.1.1
+  - geopandas
