@@ -140,3 +140,95 @@ def show_genre_explorer(df):
         fig.show()
 
     interact(plot_genre_top, genre=genre_dropdown)
+
+
+def _genre_agg(details_genres):
+    return details_genres.groupby('genres').agg(
+        anime_count=('mal_id', 'nunique'),
+        avg_score=('score', 'mean'),
+        total_members=('members', 'sum'),
+        avg_members=('members', 'mean'),
+        median_score=('score', 'median'),
+        std_score=('score', 'std')
+    ).reset_index()
+
+def plot_genre_scatter_volume_quality(details_genres):
+    genre_agg = _genre_agg(details_genres)
+    global_avg_score = details_genres['score'].mean()
+    global_avg_count = genre_agg['anime_count'].mean()
+    fig = px.scatter(
+        genre_agg,
+        x='anime_count',
+        y='avg_score',
+        size='total_members',
+        text='genres',
+        hover_data={'anime_count': True, 'avg_score': ':.2f',
+                    'total_members': True, 'median_score': ':.2f',
+                    'std_score': ':.2f', 'avg_members': True},
+        title='Volume vs. Quality: Which Genres Perform Best?',
+        labels={'anime_count': '# Anime Produced',
+                'avg_score': 'Average Score',
+                'total_members': 'Total Members'},
+        template='plotly_white',
+        color='avg_score',
+        color_continuous_scale='Viridis',
+        size_max=60
+    )
+    fig.add_hline(
+        y=global_avg_score, line_dash='dash', line_color='red', opacity=0.5,
+        annotation_text=f'Global avg score: {global_avg_score:.2f}',
+        annotation_position='bottom right'
+    )
+    fig.add_vline(
+        x=global_avg_count, line_dash='dash', line_color='gray', opacity=0.5,
+        annotation_text=f'Avg production: {global_avg_count:.0f}',
+        annotation_position='top left'
+    )
+    fig.update_traces(textposition='top center', marker=dict(line=dict(width=1, color='DarkSlateGrey')))
+    fig.update_layout(height=650, font=dict(size=12))
+    fig.show()
+
+
+def plot_studio_consistency(details_df: pd.DataFrame, min_anime_count: int = 1):
+    """
+    Generates an interactive Plotly scatter plot analyzing studio quality vs. consistency.
+    """
+
+    details_studios = details_df.explode("studios").dropna(subset=["studios", "score"])
+
+    studio_stats = details_studios.groupby("studios").agg(
+        num_anime=("mal_id", "count"),
+        avg_score=("score", "mean"),
+        score_std=("score", "std")
+    ).reset_index()
+
+    titans = studio_stats[studio_stats["num_anime"] >= min_anime_count].copy()
+    
+    titans["score_std"] = titans["score_std"].fillna(0)
+
+    fig = px.scatter(
+        titans,
+        x="avg_score",
+        y="score_std",
+        size="num_anime",
+        hover_name="studios", 
+        hover_data={
+            "num_anime": True, 
+            "avg_score": ':.2f', 
+            "score_std": ':.2f'
+        },
+        title="The Monopoly of the Titans: Studio Consistency vs. Quality",
+        labels={
+            "avg_score": "Average Score (Higher = Better Quality)",
+            "score_std": "Score Variance / Std Dev (Lower = More Consistent)"
+        },
+        size_max=55,
+        opacity=0.6,
+        color_discrete_sequence=["#3498db"] 
+    )
+
+    fig.add_hline(y=titans['score_std'].median(), line_dash="dot", line_color="gray", annotation_text="Median Consistency")
+    fig.add_vline(x=titans['avg_score'].median(), line_dash="dot", line_color="gray", annotation_text="Median Score")
+
+    # Display the plot
+    fig.show()
