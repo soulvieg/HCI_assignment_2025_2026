@@ -6,6 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 
+from ipywidgets import interact, Dropdown
+
 
 def str_to_list(s):
     """
@@ -108,3 +110,33 @@ def plot_hbar(data, label_col, val_col, color_col=None, annot_col=None,
     plt.tight_layout()
     plt.show()
 
+def show_genre_explorer(df):
+    """
+    Generates an interactive Plotly bar chart for top anime by genre.
+    """
+    genres_list = sorted(df['genres'].dropna().unique())
+    genre_dropdown = Dropdown(options=genres_list, description='Genre:', layout={'width': '300px'})
+
+    def plot_genre_top(genre):
+        # Use the passed 'df' instead of a global variable
+        data = df[df['genres'] == genre].nlargest(10, 'score')
+        
+        fig = px.bar(data, x='score', y='title', orientation='h',
+                     title=f'Top 10 Anime — {genre}',
+                     color='score', color_continuous_scale='viridis',
+                     text='score')
+        
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        
+        # Calculate dynamic range
+        min_score = data['score'].min() - 0.05
+        max_score = data['score'].max() + 0.05
+        
+        fig.update_layout(
+            yaxis={'categoryorder': 'total ascending'}, 
+            xaxis={'range': [min_score, max_score]}, 
+            height=500
+        )
+        fig.show()
+
+    interact(plot_genre_top, genre=genre_dropdown)
