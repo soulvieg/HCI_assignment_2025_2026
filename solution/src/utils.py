@@ -31,6 +31,8 @@ def load_data(tables, data_path="data/"):
         "recommendations": ("parquet", "recommendations_clean.parquet"),
         "stats": ("parquet", "stats_clean.parquet"),
         "profiles": ("csv", "profiles.csv"),
+        "person_voice_works": ("parquet", "person_voice_works_clean.parquet"),
+        "person_details": ("parquet", "person_details_clean.parquet"),
     }
     kwargs = {
         "profiles": {"dtype": {"username": "string", "gender": "string"}},
@@ -231,4 +233,38 @@ def plot_studio_consistency(details_df: pd.DataFrame, min_anime_count: int = 1):
     fig.add_vline(x=titans['avg_score'].median(), line_dash="dot", line_color="gray", annotation_text="Median Score")
 
     # Display the plot
+    fig.show()
+
+def plot_violin_star_power(person_voice_works, person_details, details):
+    voice_actors = person_voice_works.merge(
+        person_details[['person_mal_id', 'favorites']],
+        on='person_mal_id', how='inner'
+    )
+    anime_star_power = voice_actors.groupby('anime_mal_id').agg(
+        avg_star_power=('favorites', 'mean'),
+        cast_size=('person_mal_id', 'nunique')
+    ).reset_index()
+    star_system = anime_star_power.merge(
+        details[['mal_id', 'title', 'score', 'scored_by']],
+        left_on='anime_mal_id', right_on='mal_id', how='inner'
+    )
+    df_clean = star_system[
+        star_system['score'].notna() & (star_system['scored_by'] >= 1000)
+    ].copy()
+    labels = ['1. Niche / Unknown', '2. Standard Cast',
+              '3. Popular Cast', '4. All-Star Cast']
+    df_clean['cast_tier'] = pd.qcut(df_clean['avg_star_power'], q=4, labels=labels)
+    fig = px.violin(
+        df_clean, x="cast_tier", y="score", color="cast_tier",
+        box=True, points="outliers",
+        hover_data=["title", "avg_star_power", "cast_size"],
+        title="Voices of Gold: Does Star Power Guarantee a Hit?",
+        labels={
+            "cast_tier": "Cast Star Power Tier (Based on Avg Seiyuu Favorites)",
+            "score": "Anime Score"
+        },
+        template="plotly_white",
+        category_orders={"cast_tier": labels}
+    )
+    fig.update_layout(showlegend=False)
     fig.show()
