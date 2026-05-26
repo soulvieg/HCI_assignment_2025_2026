@@ -4,6 +4,7 @@ Generic utility functions
 import ast
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 
 def str_to_list(s):
@@ -74,3 +75,36 @@ def plot_comparison_side_by_side(top_viewed, top_rated, figsize=(14, 6)):
     fig.suptitle('Comparison: Most Watched vs Most Appreciated Anime', fontsize=14, fontweight='bold')
     plt.tight_layout()
     plt.show()
+
+
+def plot_hbar(data, label_col, val_col, color_col=None, annot_col=None,
+              annot_fmt="{:.2f}", annot_prefix="", annot_suffix="",
+              title="", xlabel="", figsize=(10, 6),
+              cmap="viridis", top_n=None, sort_by=None):
+    if sort_by is None:
+        sort_by = val_col
+    if top_n is not None:
+        data = data.nlargest(top_n, sort_by)
+
+    data = data.sort_values(sort_by, ascending=True).copy()
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    if color_col is not None:
+        norm = plt.Normalize(data[color_col].min(), data[color_col].max())
+        colors = plt.colormaps[cmap](norm(data[color_col]))
+    else:
+        colors = None
+
+    bars = ax.barh(data[label_col], data[val_col], color=colors)
+
+    if annot_col is not None:
+        for i, (_, row) in enumerate(data.iterrows()):
+            label = annot_prefix + annot_fmt.format(row[annot_col]) + annot_suffix
+            ax.text(row[val_col] * 1.01, i, label, va="center")
+
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
+    plt.tight_layout()
+    plt.show()
+
