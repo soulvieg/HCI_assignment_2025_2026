@@ -33,6 +33,7 @@ def load_data(tables, data_path="data/"):
         "profiles": ("csv", "profiles.csv"),
         "person_voice_works": ("parquet", "person_voice_works_clean.parquet"),
         "person_details": ("parquet", "person_details_clean.parquet"),
+        "person_anime_works": ("parquet", "person_anime_works_clean.parquet"),
     }
     kwargs = {
         "profiles": {"dtype": {"username": "string", "gender": "string"}},
