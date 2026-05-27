@@ -268,3 +268,59 @@ def plot_violin_star_power(person_voice_works, person_details, details):
     )
     fig.update_layout(showlegend=False)
     fig.show()
+
+
+def plot_character_popularity_scatter(characters, character_anime_works, details):
+    """
+    Creates a scatter plot comparing Anime Popularity to Character Favorites.
+    """
+    char_roles = character_anime_works.merge(
+        characters[['character_mal_id', 'name', 'favorites']], 
+        left_on='character_mal_id', 
+        right_on='character_mal_id', 
+        how='inner'
+    )
+    
+    # Merge with anime details to get anime popularity (using members or scored_by)
+    full_df = char_roles.merge(
+        details[['mal_id', 'title', 'members']], 
+        left_on='anime_mal_id', 
+        right_on='mal_id', 
+        how='inner',
+        suffixes=('_char', '_anime')
+    )
+
+    full_df_sorted = full_df.sort_values(by='members', ascending=False)
+
+    unique_chars = full_df_sorted.drop_duplicates(subset=['character_mal_id'], keep='first')
+
+    # To avoid massive clutter, let's look at the Top 500 or 1000 most favorited characters
+    top_chars = unique_chars.sort_values(by='favorites', ascending=False).head(1000)
+    
+
+    fig = px.scatter(
+        top_chars, 
+        x="members", 
+        y="favorites", 
+        color="role",
+        hover_name="name",
+        hover_data={"title": True, "members": True, "favorites": True, "role": False},
+        labels={
+            "members": "Anime Popularity (Total Members)",
+            "favorites": "Character Favorites",
+            "role": "Character Role"
+        },
+        title="Do Popular Anime Always Produce the Most Loved Characters?",
+        opacity=0.7,
+        color_discrete_map={"Main": "#EF553B", "Supporting": "#636EFA"} # Distinct colors
+    )
+    
+    # Use log scale because popularity and favorites usually have massive outliers
+    fig.update_layout(
+        xaxis_type="log", 
+        yaxis_type="log",
+        template="plotly_white",
+        legend_title="Role"
+    )
+    
+    fig.show()
