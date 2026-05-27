@@ -324,3 +324,46 @@ def plot_character_popularity_scatter(characters, character_anime_works, details
     )
     
     fig.show()
+
+def plot_role_favorites_violin(characters, character_anime_works):
+    """
+    Creates a violin plot comparing the distribution of favorites between Main and Supporting characters.
+    """
+
+    df = character_anime_works.merge(
+        characters[['character_mal_id', 'name', 'favorites']], 
+        left_on='character_mal_id', 
+        right_on='character_mal_id', 
+        how='inner'
+    )
+    
+    # Filter out characters with 0 favorites to get a cleaner distribution of actually "liked" characters
+    df_clean = df[df['favorites'] > 10].copy()
+    
+    # Filter to only Main and Supporting
+    df_clean = df_clean[df_clean['role'].isin(['Main', 'Supporting'])]
+    
+    fig = px.violin(
+        df_clean, 
+        x="role", 
+        y="favorites", 
+        color="role",
+        box=True, 
+        points=False, 
+        hover_name="name",
+        labels={
+            "role": "Character Role",
+            "favorites": "Total Favorites (Log Scale)"
+        },
+        title="Main vs. Supporting: Who Really Captures the Audience's Heart?",
+        color_discrete_map={"Main": "#EF553B", "Supporting": "#636EFA"}
+    )
+    
+    # Log scale on Y-axis because a few characters will have 100k+ favorites, while most have < 100
+    fig.update_layout(
+        yaxis_type="log",
+        template="plotly_white",
+        showlegend=False # Legend is redundant since x-axis has the role names
+    )
+    
+    fig.show()
